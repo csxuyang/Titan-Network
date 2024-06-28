@@ -19,7 +19,6 @@ storage_gb=$2
 # 让用户输入存储路径（可选）
 custom_storage_path=
 
-apt update
 
 # 检查 Docker 是否已安装
 if ! command -v docker &> /dev/null
