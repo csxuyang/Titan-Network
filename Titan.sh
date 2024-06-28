@@ -10,16 +10,16 @@ fi
 function install_node() {
 
 # 读取加载身份码信息
-read -p "输入你的身份码: " id
+id=$1
 
 # 让用户输入想要创建的容器数量
-read -p "请输入你想要创建的节点数量，单IP限制最多5个节点，目前建议只开1个节点，效率最高: " container_count
+container_count=1
 
 # 让用户输入想要分配的空间大小
-read -p "请输入你想要分配每个节点的存储空间大小（GB），单个上限2T, 设置后，需要执行Docker restart 容器名称，使其成效: " storage_gb
+storage_gb=$2
 
 # 让用户输入存储路径（可选）
-read -p "请输入节点存储数据的宿主机路径（直接回车将使用默认路径 titan_storage_$i,依次数字顺延）: " custom_storage_path
+custom_storage_path=
 
 apt update
 
@@ -54,7 +54,7 @@ do
     mkdir -p "$storage_path"
 
     # 运行容器，并设置重启策略为always
-    container_id=$(docker run -d --restart always -v "$storage_path:/root/.titanedge/storage" --name "titan$i" --net=host nezha123/titan-edge:1.4)
+    container_id=$(docker run -d --restart always -v "$storage_path:/root/.titanedge/storage" --name "titan$i" --net=host nezha123/titan-edge)
 
     echo "节点 titan$i 已经启动 容器ID $container_id"
 
