@@ -19,6 +19,8 @@ storage_gb=$2
 # 让用户输入存储路径（可选）
 custom_storage_path=
 
+current_rpc_port=30000
+
 
 # 检查 Docker 是否已安装
 if ! command -v docker &> /dev/null
@@ -38,6 +40,7 @@ docker pull nezha123/titan-edge
 # 创建用户指定数量的容器
 for i in $(seq 1 $container_count)
 do
+    current_rpc_port=$((start_rpc_port + i - 1))
     # 判断用户是否输入了自定义存储路径
     if [ -z "$custom_storage_path" ]; then
         # 用户未输入，使用默认路径
@@ -58,14 +61,16 @@ do
     sleep 30
 
         # 修改宿主机上的config.toml文件以设置StorageGB值
-docker exec $container_id bash -c "\
-    sed -i 's/^[[:space:]]*#StorageGB = .*/StorageGB = $storage_gb/' /root/.titanedge/config.toml && \
-    echo '容器 titan'$i' 的存储空间已设置为 $storage_gb GB'"
-   
+    docker exec $container_id bash -c "\
+        sed -i 's/^[[:space:]]*#StorageGB = .*/StorageGB = $storage_gb/' /root/.titanedge/config.toml && \
+        sed -i 's/^[[:space:]]*#ListenAddress = \"0.0.0.0:1234\"/ListenAddress = \"0.0.0.0:$current_rpc_port\"/' /root/.titanedge/config.toml && \
+        echo '容器 titan'$i' 的存储空间设置为 $storage_gb GB，RPC 端口设置为 $current_rpc_port'"
+		
+    docker restart $container_id
     # 进入容器并执行绑定和其他命令
     docker exec $container_id bash -c "\
         titan-edge bind --hash=$id https://api-test1.container1.titannet.io/api/v2/device/binding"
-docker restart $container_id
+
 done
 
 echo "==============================所有节点均已设置并启动===================================."
