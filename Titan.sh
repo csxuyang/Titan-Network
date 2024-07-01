@@ -11,7 +11,7 @@ fi
 id=$1
 
 # 让用户输入想要创建的容器数量
-container_count=1
+container_count=$3
 
 # 让用户输入想要分配的空间大小
 storage_gb=$2
