@@ -19,7 +19,7 @@ storage_gb=$2
 # 让用户输入存储路径（可选）
 custom_storage_path=
 
-current_rpc_port=30000
+start_rpc_port=30000
 
 
 # 检查 Docker 是否已安装
